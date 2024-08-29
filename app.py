@@ -12,7 +12,9 @@ st.header('Please upload a picture')
 
 # Load Model 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-model = torch.load('asl_model_fold0.h5', map_location=device)
+
+# โหลดโมเดลจากไฟล์ asl_model.pth
+model = torch.load('asl_model.pth', map_location=device)
 
 # Display image & Prediction  
 uploaded_image = st.file_uploader('Choose an image', type=['jpg', 'jpeg', 'png'])
