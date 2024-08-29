@@ -1,29 +1,40 @@
-import streamlit as st
-from PIL import Image, ImageOps
+!pip install streamlit
+import streamlit as st 
+import torch
+from PIL import Image
+from prediction import pred_class
 import numpy as np
-import tensorflow.keras
 
-# ฟังก์ชั่นในการทำ Classification
-def classify_image(image, model_path):
-    model = tensorflow.keras.models.load_model(model_path)
-    data = np.ndarray(shape=(1, 64, 64, 3), dtype=np.float32)
-    image = ImageOps.fit(image, (64, 64), Image.ANTIALIAS)
-    image_array = np.asarray(image)
-    normalized_image_array = (image_array.astype(np.float32) / 127.0) - 1
-    data[0] = normalized_image_array
-    prediction = model.predict(data)
-    return np.argmax(prediction), prediction
+# Set title 
+st.title('American Sign Language Classification')
 
-st.title("ASL Classification")
-st.header("Upload a hand sign image to classify")
+#Set Header 
+st.header('Please up load picture')
 
-uploaded_file = st.file_uploader("Choose an image...", type="jpg")
-if uploaded_file is not None:
-    image = Image.open(uploaded_file)
+# Load Model 
+device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+model = torch.load('asl_model_fold0.h5', map_location=device)
+
+# Display image & Prediction  
+uploaded_image = st.file_uploader('Choose an image', type=['jpg', 'jpeg', 'png'])
+
+if uploaded_image is not None:
+    image = Image.open(uploaded_image).convert('RGB')
     st.image(image, caption='Uploaded Image', use_column_width=True)
-    st.write("Classifying...")
-    label, prob = classify_image(image, 'asl_model.h5')
-    
-    # แสดงผลลัพธ์
-    classes = ['A', 'B', 'C', 'D']
-    st.write(f"Prediction: {classes[label]} with confidence {prob[0][label]:.2%}")
+
+    class_name = ['a', 'b', 'c', 'd']
+
+    if st.button('Prediction'):
+        # Prediction class
+        probli = pred_class(model, image, class_name)
+
+        st.write("## Prediction Result")
+        # Get the index of the maximum value in probli[0]
+        max_index = np.argmax(probli[0])
+
+        # Iterate over the class_name and probli lists
+        for i in range(len(class_name)):
+            # Set the color to blue if it's the maximum value, otherwise use the default color
+            color = "blue" if i == max_index else None
+            st.write(f"## <span style='color:{color}'>{class_name[i]} : {probli[0][i]*100:.2f}%</span>",
+                     unsafe_allow_html=True)
