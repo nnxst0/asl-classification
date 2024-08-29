@@ -27,7 +27,7 @@ if uploaded_image is not None:
 
     if st.button('Prediction'):
         # Prediction class
-        probli = pred_class(model, image, class_name)
+        model = torch.load('asl_model_fold0.h5', map_location=device)
 
         st.write("## Prediction Result")
         max_index = np.argmax(probli[0])
