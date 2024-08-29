@@ -13,8 +13,12 @@ st.header('Please upload a picture')
 # Load Model 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-# โหลดโมเดลจากไฟล์ asl_model.pth
-model = torch.load('asl_model.pth', map_location=device)
+# ตรวจสอบการโหลดโมเดล
+try:
+    model = torch.load('asl_model.pth', map_location=device)
+    st.write("Model loaded successfully!")
+except Exception as e:
+    st.write(f"Error loading model: {e}")
 
 # Display image & Prediction  
 uploaded_image = st.file_uploader('Choose an image', type=['jpg', 'jpeg', 'png'])
@@ -27,11 +31,13 @@ if uploaded_image is not None:
 
     if st.button('Prediction'):
         # Prediction class
-        label, probli = pred_class(model, image, class_names)
+        try:
+            label, probli = pred_class(model, image, class_names)
+            st.write("## Prediction Result")
+            max_index = np.argmax(probli[0])
 
-        st.write("## Prediction Result")
-        max_index = np.argmax(probli[0])
-
-        for i in range(len(class_names)):
-            color = "blue" if i == max_index else None
-            st.write(f"## <span style='color:{color}'>{class_names[i]} : {probli[0][i]*100:.2f}%</span>", unsafe_allow_html=True)
+            for i in range(len(class_names)):
+                color = "blue" if i == max_index else None
+                st.write(f"## <span style='color:{color}'>{class_names[i]} : {probli[0][i]*100:.2f}%</span>", unsafe_allow_html=True)
+        except Exception as e:
+            st.write(f"Error during prediction: {e}")
