@@ -11,6 +11,5 @@ matplotlib
 tqdm
 pandas
 scipy
-shutil
 evaluate
 typing
