@@ -1,5 +1,6 @@
 streamlit
 torch
+torchaudio
 torchvision
 torchinfo
 pillow
