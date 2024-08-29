@@ -15,7 +15,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # ตรวจสอบการโหลดโมเดล
 try:
-    model = torch.load('asl_model.pth', map_location=device)
+    model = torch.load('asl_model_fold0.pt', map_location=device)
     st.write("Model loaded successfully!")
 except Exception as e:
     st.write(f"Error loading model: {e}")
