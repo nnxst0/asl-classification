@@ -13,7 +13,7 @@ st.header('Please upload a picture')
 # Load Model 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-# ตรวจสอบการโหลดโมเดล
+# Check the model
 try:
     model = torch.load('asl_model_fold0.pt', map_location=device)
     st.write("Model loaded successfully!")
